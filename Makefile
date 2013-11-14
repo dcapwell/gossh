@@ -1,6 +1,6 @@
 all: clean build test
 
-PROTO_PKG = github.com/dcapwell/gossh/prototype/unix_socket
+PROTO_PKG = github.com/dcapwell/gossh/prototype
 
 clean:
 	@go clean
