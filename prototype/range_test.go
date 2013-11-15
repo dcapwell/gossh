@@ -33,7 +33,7 @@ func TestRange(t *testing.T) {
 }
 
 func TestLazyRange(t *testing.T) {
-  r := &Range{Start: 1, End: 10}
+  r := &Range{Start: 1, End: 4}
 
   for i := range r.Iter() {
     log.Printf("Number: %d\n", i)

@@ -30,3 +30,11 @@ goscp host-[1..100].example.com \
   /etc/hosts                      # local src file to copy over
   /tmp/admins-hosts               # location where to save file on remote hosts
 ```
+
+```
+gorsync host-[1..100].example.com \
+  -r                              # recursive
+  --keep-insync                   # on local file change, sync
+  /local/dir
+  /remote/dir
+```
