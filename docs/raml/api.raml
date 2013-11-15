@@ -1,111 +1,162 @@
 #%RAML 0.8
 title: GoSSH
 version: v1
+baseUri: /api/v1
 documentation:
   - title: API Docs
     content: |
       API for the GoSSH agent.  This API should not be exposed via a port, but rather should be hidden
       under a unix socket.  This is the main reason that security is not built into the API itself.
 
-/api:
-  /{version}:
-    /ssh:
-      /{hosts}:
-        get:
-          description: Run the given command on all the hosts and return response
-          queryParameters:
-            # Why is this a query param?  Cmd could be a pain to encode into the URI path.  You still 
-            # need to do it in the query param but most languages have better support for this.
-            cmd:
-              type: string
-              description: Command to run on remote host
-              required: true
-              example: date +'%s'
-            concurrent:
-              type: integer
-              description: How many concurrent SSH session should be allowed (at most) for this request.  The API holds all right to lower this value if it deems fit (too many concurrent sessions already).
-              required: false
-              example: 40
-            user:
-              type: string
-              description: User to run remote command as.  This user must exist on the remote hosts.
-              required: false
-              default: Current OS user running this agent
-              example: techops
-            identity:
-              type: file
-              description: Path on local disk to the private key that identifies the user
-              required: false
-              default: ~/.ssh/id_dsa or ~/.ssh/id_rsa
-              example: /home/techops/.ssh/id_dsa
-            option:
-              # could this be done as a {option}?  Could make the URI more readable; 
-              # ?user=techops&ConnectTimeout=2&StrictHostKeyChecking=no
-              # vs
-              # ?user=techops&option='ConnectTimeout=2'&option='StrictHostKeyChecking=no'
-              # As of RAML 0.8, this is not allowed to be paramaterized.  Only scalar values allowed.
-              type: string
-              description: SSH option to run command with.  This param can be used multiple times to define different options
-              required: false
-              example: ConnectTimeout=2
-          responses:
-            200:
-              body:
-                application/json:
-                  example: '{
-                    "requests": {
-                      "concurrent": 3,
-                      "executionhost": "localhost",
-                      "hosts": "dn[1-3]-example.com",
-                      "totaltime": "600ms"
-                    },
-                    "responses": [{
-                      "hostname": "dn1-example.com",
-                      "duration": "134ms",
-                      "response": {
-                        "code": 0,
-                        "stdout": "Hello World"
-                      }}, {
-                        "hostname": "dn2-example.com",
-                        "duration": "245ms",
-                        "response": {
-                          "code": 127,
-                          "stderr": "bash: aoinasdofinasdf: command not found"
-                      }}, {
-                        "hostname": "dn3-example.com",
-                        "duration": "600ms",
-                        "response": {
-                          "code": 1
-                      }}]
-                    }'
-            400:
-              body:
-                application/json:
-                  example: '{
-                      "type" : "Parser Error",
-                      "message" : "Unable to parse host string example[12..].com; range must have a start and end point."
-                    }'
-    /scp:
-      /{hosts}:
-        /{file}:
-          post:
-            description: Copy local file to remote hosts
-            queryParameters:
-              path:
-                description: Path on remote host where to copy the file to
-                type: file
-                example: ~/
-                required: true
-          get:
-            description: Copy remote file to local host
-            queryParameters:
-              path:
-                description: Path on local host where to copy the file to
-                type: file
-                example: /tmp/gws1384499310
-                required: true
-    /rsync:
-      /{hosts}:
-        /{localPath}:
-          post:
-            description: Sync local files to remote hosts
+/ssh:
+  # how do I doc this param?
+  /{hosts}:
+    get:
+      description: Run the given command on all the hosts and return response
+      queryParameters:
+        # Why is this a query param?  Cmd could be a pain to encode into the URI path.  You still
+        # need to do it in the query param but most languages have better support for this.
+        cmd:
+          type: string
+          description: Command to run on remote host
+          required: true
+          example: date +'%s'
+        concurrent:
+          type: integer
+          description: How many concurrent SSH session should be allowed (at most) for this request.  The API holds all right to lower this value if it deems fit (too many concurrent sessions already).
+          required: false
+          example: 40
+        user:
+          type: string
+          description: User to run remote command as.  This user must exist on the remote hosts.
+          required: false
+          default: Current OS user running this agent
+          example: techops
+        identity:
+          type: file
+          description: Path on local disk to the private key that identifies the user
+          required: false
+          default: ~/.ssh/id_dsa or ~/.ssh/id_rsa
+          example: /home/techops/.ssh/id_dsa
+        option:
+          # could this be done as a {option}?  Could make the URI more readable;
+          # ?user=techops&ConnectTimeout=2&StrictHostKeyChecking=no
+          # vs
+          # ?user=techops&option='ConnectTimeout=2'&option='StrictHostKeyChecking=no'
+          # As of RAML 0.8, this is not allowed to be paramaterized.  Only scalar values allowed.
+          type: string
+          description: SSH option to run command with.  This param can be used multiple times to define different options
+          required: false
+          example: ConnectTimeout=2
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                "requests": {
+                  "concurrent": 3,
+                  "executionhost": "localhost",
+                  "hosts": "dn[1-3]-example.com",
+                  "totaltime": "600ms"
+                },
+                "responses": [{
+                  "hostname": "dn1-example.com",
+                  "duration": "134ms",
+                  "response": {
+                    "code": 0,
+                    "stdout": "Hello World"
+                  }}, {
+                    "hostname": "dn2-example.com",
+                    "duration": "245ms",
+                    "response": {
+                      "code": 127,
+                      "stderr": "bash: aoinasdofinasdf: command not found"
+                  }}, {
+                    "hostname": "dn3-example.com",
+                    "duration": "600ms",
+                    "response": {
+                      "code": 1
+                  }}]
+                }
+        400:
+          body:
+            application/json:
+              example: |
+                {
+                  "type" : "Parser Error",
+                  "message" : "Unable to parse host string example[12..].com; range must have a start and end point."
+                }
+/scp:
+  /{hosts}:
+    post:
+      description: Copy local file to remote hosts. Both POST body and query params are supported, but you must only use one.  If body is used, query params will be ignored.  If body is missing, query params are expected.
+      body:
+        application/json:
+          schema: |
+            {
+              "properties": {
+                "localPath": {
+                  "description": "Path on local disk where to copy from",
+                  "type": "file",
+                  "example": "/tmp/gws1384499310",
+                  "required": true
+                },
+                "remotePath": {
+                  "description": "Path on remote host where to copy the file to",
+                  "type": "file",
+                  "example": "~/",
+                  "required": true
+                }
+              }
+            }
+          example: |
+            {
+              "localPath": "/tmp/gws1384499310",
+              "remotePath": "~/"
+            }
+      queryParameters:
+        localPath:
+          description: Path on local disk where to copy from
+          type: file
+          example: /tmp/gws1384499310
+          required: true
+        remotePath:
+          description: Path on remote host where to copy the file to
+          type: file
+          example: ~/
+          required: true
+    get:
+      description: Copy remote file to local host
+      queryParameters:
+        localPath:
+          description: Path on local host where to copy the file to
+          type: file
+          example: /tmp/gws1384499310
+          required: true
+        remotePath:
+          description: Path on remote host where the file to copy should be found
+          type: file
+          example: /etc/hosts
+          required: true
+/rsync:
+  /{hosts}:
+    post:
+      description: Sync local files/directories to remote hosts
+      queryParameters:
+        localPath:
+          description: Path on local host where to sync
+          type: file
+          example: /tmp/remote-configs
+          required: true
+        remotePath:
+          description: Path on remote host where the sync should write to
+          type: file
+          example: ~/configs
+          required: true
+        keepInSync:
+          description: Should API monitor changes on localPath for changes, then resync?
+          type: boolean
+          example: true
+          default: false
+          required: false
