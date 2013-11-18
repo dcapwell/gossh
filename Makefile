@@ -1,6 +1,7 @@
 all: clean build test
 
-PROTO_PKG = github.com/dcapwell/gossh/prototype
+BASE = github.com/dcapwell/gossh
+PROTO_PKG = $(BASE)/prototype $(BASE)/workpool $(BASE)
 
 clean:
 	@go clean
