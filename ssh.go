@@ -5,6 +5,11 @@ import (
   "github.com/dcapwell/gossh/workpool"
 )
 
+const (
+  MIN_POOL_SIZE = 1
+  MAX_POOL_SIZE = 100
+)
+
 type Options struct {
   Concurrent  int
   User        string
@@ -38,14 +43,19 @@ type sshImpl struct {
 
 func (s *sshImpl) Run(hosts []string, cmd string, options Options) (SshResponses, error) {
   // find how many hosts to run concurrently
-  // create new bounded worker pool
+  /*
+  conc := MAX_POOL_SIZE
+  if options.Concurrent > 0 {
+    conc = options.Concurrent
+  }
+  */
   // create ssh worker per host, send to pool
   // wait for completion
   return SshResponses{}, nil
 }
 
 func NewSsh() Ssh {
-  pool, _ := workpool.NewWorkPoolWithMax(40)
+  pool, _ := workpool.NewWorkPoolWithMax(MAX_POOL_SIZE)
   // error is only returned if max is not positive, so can ignore it
   return &sshImpl{pool: pool}
 }
