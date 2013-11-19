@@ -15,12 +15,14 @@ type StatefulNoOp struct {}
 func (s StatefulNoOp) Apply() (interface{}, error) {
   return "Stateful NoOP", nil
 }
+//var State = StatefulNoOp{}
 
 func NoOpTasks(num int) chan Task {
 	ch := make(chan Task, num)
 	go func() {
 		for i := 0; i < num; i++ {
       ch <- NoOp
+      // ch <- State.Apply
 		}
 		close(ch)
 	}()
