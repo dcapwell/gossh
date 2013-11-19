@@ -11,18 +11,38 @@ var NoOp = func() (interface{}, error) {
 	return "NoOp", nil
 }
 
-type StatefulNoOp struct {}
+type StatefulNoOp struct{}
+
 func (s StatefulNoOp) Apply() (interface{}, error) {
-  return "Stateful NoOP", nil
+	return "Stateful NoOP", nil
 }
+
 //var State = StatefulNoOp{}
 
 func NoOpTasks(num int) chan Task {
 	ch := make(chan Task, num)
 	go func() {
 		for i := 0; i < num; i++ {
-      ch <- NoOp
-      // ch <- State.Apply
+			ch <- NoOp
+			// ch <- State.Apply
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+type PanicAtTheDisco struct{}
+
+func (n PanicAtTheDisco) Run() (interface{}, error) {
+	panic("at the disco")
+}
+
+func PanicTasks(num int) chan Task {
+	ch := make(chan Task, num)
+	panicFunc := PanicAtTheDisco{}.Run
+	go func() {
+		for i := 0; i < num; i++ {
+			ch <- panicFunc
 		}
 		close(ch)
 	}()
@@ -65,6 +85,32 @@ var _ = Describe("Workpool", func() {
 						taskResult, ok = <-rsp
 						Expect(ok).To(BeTrue())
 						Expect(taskResult.Result).To(Equal("NoOp"))
+					}
+					taskResult, ok = <-rsp
+					Expect(ok).To(BeFalse())
+				})
+			}
+		})
+	})
+
+	Describe("run panic tasks", func() {
+		Context("with", func() {
+			for i := 1; i < 100; i++ {
+				It(strconv.Itoa(i)+" resource", func() {
+					pool, err := NewWorkPoolWithMax(i)
+					Expect(err).To(BeNil())
+					rsp, err := pool.Run(PanicTasks(i*2), 1, 100)
+					Expect(err).To(BeNil())
+					var taskResult TaskResult
+					var ok bool
+					for j := 0; j < i*2; j++ {
+						taskResult, ok = <-rsp
+						Expect(ok).To(BeTrue())
+						Expect(taskResult.Status).To(Equal(FAILURE))
+						errResult, ok := taskResult.Result.(ErrorResult)
+						Expect(ok).To(Equal(true))
+						Expect(errResult.Result).To(BeNil())
+						Expect(errResult.Error).To(HaveOccured())
 					}
 					taskResult, ok = <-rsp
 					Expect(ok).To(BeFalse())
