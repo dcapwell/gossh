@@ -4,6 +4,7 @@ import (
 	. "github.com/dcapwell/gossh/workpool"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+  "strconv"
 )
 
 var NoOp = func() (interface{}, error) {
@@ -16,6 +17,7 @@ func NoOpTasks(num int) chan Task {
 		for i := 0; i < num; i++ {
 			ch <- NoOp
 		}
+    close(ch)
 	}()
 	return ch
 }
@@ -44,17 +46,23 @@ var _ = Describe("Workpool", func() {
 
 	Describe("run no-op tasks", func() {
 		Context("with", func() {
-			It("1 resource", func() {
-				pool, err := NewWorkPoolWithMax(1)
-				Expect(err).To(BeNil())
-				rsp, err := pool.Run(NoOpTasks(1), 1, 1)
-				Expect(err).To(BeNil())
-				Expect(rsp).ShouldNot(BeNil())
-			})
-			It("10 resource", func() {
-			})
-			It("100 resource", func() {
-			})
+      for i := 1; i < 20; i++ {
+        It(strconv.Itoa(i) + " resource", func() {
+          pool, err := NewWorkPoolWithMax(i)
+          Expect(err).To(BeNil())
+          rsp, err := pool.Run(NoOpTasks(i * 2), 1, 100)
+          Expect(err).To(BeNil())
+          var taskResult TaskResult
+          var ok bool
+          for j := 0; j < i * 2; j++ {
+            taskResult, ok = <-rsp
+            Expect(ok).To(BeTrue())
+            Expect(taskResult.Result).To(Equal("NoOp"))
+          }
+          taskResult, ok = <-rsp
+          Expect(ok).To(BeFalse())
+        })
+      }
 		})
 	})
 
