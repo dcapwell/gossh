@@ -85,6 +85,7 @@ type GreaterThanMatcher struct {
 }
 
 func (matcher *GreaterThanMatcher) Match(actual interface{}) (success bool, message string, err error) {
+	//TODO support floating point as well
 	ok := isInteger(actual)
 	if ok {
 		num := toInteger(actual)

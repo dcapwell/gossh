@@ -17,7 +17,6 @@ var _ = Describe("Gossh", func() {
 
 				It("should succeed", func() {
 					Expect(err).To(BeNil())
-
 				})
 
 				It("with one result", func() {
@@ -34,12 +33,37 @@ var _ = Describe("Gossh", func() {
 				It("should not return error", func() {
 					Expect(err).To(BeNil())
 				})
-				It("should have failed", func() {
+				It("should have only one response", func() {
 					Expect(rsp.Responses).To(HaveLen(1))
+				})
+				It("should have response from host", func() {
+					localRsp := rsp.Responses[0]
+					Expect(localRsp.Hostname).To(Equal("localhost"))
+				})
+				It("should have failed", func() {
 					localRsp := rsp.Responses[0]
 					Expect(localRsp.Response).ShouldNot(BeNil())
 					Expect(localRsp.Response.Code).To(BeGreaterThan(0))
-					Expect(localRsp.Hostname).To(Equal("localhost"))
+				})
+			})
+		})
+		Context("with mulitple hosts", func() {
+			Context("with valid command", func() {
+				rsp, err := ssh.Run([]string{"localhost", "localhost"}, "date", Options{})
+				It("should not return error", func() {
+					Expect(err).To(BeNil())
+				})
+				It("should have only two response", func() {
+					Expect(rsp.Responses).To(HaveLen(2))
+				})
+			})
+			Context("with invalid command", func() {
+				rsp, err := ssh.Run([]string{"localhost", "localhost"}, "thiscmdreallyshouldntexist", Options{})
+				It("should not return error", func() {
+					Expect(err).To(BeNil())
+				})
+				It("should have only two response", func() {
+					Expect(rsp.Responses).To(HaveLen(2))
 				})
 			})
 		})
