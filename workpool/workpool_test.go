@@ -11,11 +11,16 @@ var NoOp = func() (interface{}, error) {
 	return "NoOp", nil
 }
 
+type StatefulNoOp struct {}
+func (s StatefulNoOp) Apply() (interface{}, error) {
+  return "Stateful NoOP", nil
+}
+
 func NoOpTasks(num int) chan Task {
 	ch := make(chan Task, num)
 	go func() {
 		for i := 0; i < num; i++ {
-			ch <- NoOp
+      ch <- NoOp
 		}
 		close(ch)
 	}()
@@ -46,7 +51,7 @@ var _ = Describe("Workpool", func() {
 
 	Describe("run no-op tasks", func() {
 		Context("with", func() {
-			for i := 1; i < 20; i++ {
+			for i := 1; i < 100; i++ {
 				It(strconv.Itoa(i)+" resource", func() {
 					pool, err := NewWorkPoolWithMax(i)
 					Expect(err).To(BeNil())
