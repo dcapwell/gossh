@@ -2,8 +2,8 @@ package gossh_test
 
 import (
 	"fmt"
-	"reflect"
 	. "github.com/onsi/gomega"
+	"reflect"
 )
 
 // pulled out of matchers code

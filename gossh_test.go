@@ -5,7 +5,7 @@ import (
 	"github.com/dcapwell/gossh/workpool"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-  "log"
+	"log"
 )
 
 var _ = Describe("Gossh", func() {
@@ -73,7 +73,7 @@ var _ = Describe("Gossh", func() {
 			})
 			Context("with invalid command", func() {
 				rsp, err := ssh.Run([]string{"localhost", "localhost"}, "thiscmdreallyshouldntexist", Options{})
-        log.Printf("Response from multi requests, single host, invalid cmd: %v\n", rsp)
+				log.Printf("Response from multi requests, single host, invalid cmd: %v\n", rsp)
 
 				It("should not return error", func() {
 					Expect(err).To(BeNil())

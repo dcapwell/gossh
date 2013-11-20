@@ -45,6 +45,15 @@ func NewSsh() Ssh {
 	return &sshProcessImpl{pool: pool}
 }
 
+func NewSshWithMax(max int) (Ssh, error) {
+	if max < 1 {
+		return nil, fmt.Errorf("Unable to create ssh with %d max resources; max must be a positive number\n", max)
+	}
+	pool, _ := workpool.NewWorkPoolWithMax(max)
+	// error is only returned if max is not positive, so can ignore it
+	return &sshProcessImpl{pool: pool}, nil
+}
+
 type sshProcessImpl struct {
 	pool workpool.WorkPool
 }
@@ -68,14 +77,14 @@ func waitForCompletion(results chan workpool.TaskResult, expectedResponses int) 
 	responses := make([]SshResponseContext, expectedResponses)
 	idx := 0
 	for result := range results {
-    rsp, err := taskResultToContext(result)
-    if err != nil {
+		rsp, err := taskResultToContext(result)
+		if err != nil {
 			// should this be ignored?
 			log.Printf("[WARNING]\t%v", err)
-    } else {
-      responses[idx] = rsp
-    }
-    idx++
+		} else {
+			responses[idx] = rsp
+		}
+		idx++
 	}
 	return SshResponses{responses}
 }
@@ -96,7 +105,7 @@ func createTasks(hosts []string, cmd string, options Options) chan workpool.Task
 	tasks := make(chan workpool.Task, len(hosts))
 	go func() {
 		for _, host := range hosts {
-			task := NewSshTask(host, cmd, options)
+			task := newSshTask(host, cmd, options)
 			tasks <- task
 		}
 		close(tasks)
@@ -104,9 +113,9 @@ func createTasks(hosts []string, cmd string, options Options) chan workpool.Task
 	return tasks
 }
 
-func NewSshTask(host string, cmd string, opt Options) workpool.Task {
+func newSshTask(host string, cmd string, opt Options) workpool.Task {
 	// use this method to switch impls
-	return NewSshProcessTask(host, cmd, opt).Run
+	return newSshProcessTask(host, cmd, opt).Run
 }
 
 func runConcurrency(options Options, numHosts int) int {
