@@ -5,6 +5,7 @@ import (
   "syscall"
   "io/ioutil"
   "fmt"
+  "log"
 )
 
 // this file is for SshTask that calls the local ssh shell command.
@@ -14,9 +15,40 @@ type SshProcessTask struct {
 	Options Options
 }
 
+func (s *SshProcessTask) generateCmdArguments() []string {
+  // make a slice of init size 4, but can expand to 100
+  cmd := make([]string, 0)
+
+  cmd = append(cmd, "-n")
+
+  // add user/identity
+  if s.Options.User != "" {
+    cmd = append(cmd, "-l", s.Options.User)
+  }
+  if s.Options.Identity != "" {
+    cmd = append(cmd, "-i", s.Options.Identity)
+  }
+
+  // add options
+  for key, value := range s.Options.Options {
+    cmd = append(cmd, "-o", key + "=" + value)
+  }
+
+  // add host
+  cmd = append(cmd, s.Host)
+
+  // last action, add cmd
+  cmd = append(cmd, s.Cmd)
+
+  return cmd
+}
+
+
 func (s *SshProcessTask) Run() (interface{}, error) {
 	// must return of type (SshResponseContext, error)
-  cmd := exec.Command("/usr/bin/ssh", s.Host, s.Cmd)
+  //cmd := exec.Command("/usr/bin/ssh", s.Host, s.Cmd)
+  cmd := exec.Command("ssh", s.generateCmdArguments()...)
+  log.Printf("Cmd: %v\n", cmd)
   stdout, err := cmd.StdoutPipe()
   if err != nil {
     return nil, err
