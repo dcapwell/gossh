@@ -15,3 +15,6 @@ fmt:
 
 test:
 	@go test -v $(PROTO_PKG)
+
+doc:
+	@godoc -http=":6060" -index=true -play=true
