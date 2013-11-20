@@ -1,12 +1,13 @@
-package gossh
+package gossh_test
 
 import (
+	"github.com/dcapwell/gossh"
 	"log"
 )
 
 func Example() {
-	ssh := NewSsh()
-	rsp, err := ssh.Run([]string{"localhost"}, "date", Options{})
+	ssh := gossh.NewSsh()
+	rsp, err := ssh.Run([]string{"localhost"}, "date", gossh.Options{})
 	if err != nil {
 		log.Fatalf("Unable to run command 'date' on host 'localhost': %v\n", err)
 	}
