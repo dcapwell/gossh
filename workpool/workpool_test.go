@@ -73,7 +73,7 @@ var _ = Describe("Workpool", func() {
 
 	Describe("run no-op tasks", func() {
 		Context("with", func() {
-			for i := 1; i < 100; i++ {
+			for i := 1; i < 20; i++ {
 				It(strconv.Itoa(i)+" resource", func() {
 					pool, err := NewWorkPoolWithMax(i)
 					Expect(err).To(BeNil())
@@ -95,7 +95,7 @@ var _ = Describe("Workpool", func() {
 
 	Describe("run panic tasks", func() {
 		Context("with", func() {
-			for i := 1; i < 100; i++ {
+			for i := 1; i < 20; i++ {
 				It(strconv.Itoa(i)+" resource", func() {
 					pool, err := NewWorkPoolWithMax(i)
 					Expect(err).To(BeNil())

@@ -67,25 +67,21 @@ func (s *sshProcessImpl) Run(hosts []string, cmd string, options Options) (SshRe
 func waitForCompletion(results chan workpool.TaskResult, expectedResponses int) SshResponses {
 	responses := make([]SshResponseContext, expectedResponses)
 	idx := 0
-	var err error
 	for result := range results {
-		responses[idx], err = taskResultToContext(result)
-		if err != nil {
+    rsp, err := taskResultToContext(result)
+    if err != nil {
 			// should this be ignored?
 			log.Printf("[WARNING]\t%v", err)
-		}
+    } else {
+      responses[idx] = rsp
+    }
+    idx++
 	}
 	return SshResponses{responses}
 }
 
 func taskResultToContext(result workpool.TaskResult) (SshResponseContext, error) {
 	if result.Status == workpool.SUCCESS {
-		/*
-		   switch rs := result.Result.(type) {
-		   case SshResponseContext:
-		     return rs, nil
-		   }
-		*/
 		rs, ok := result.Result.(SshResponseContext)
 		if ok {
 			return rs, nil

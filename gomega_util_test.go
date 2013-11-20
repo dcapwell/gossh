@@ -2,8 +2,8 @@ package gossh_test
 
 import (
 	"fmt"
-	. "github.com/onsi/gomega"
 	"reflect"
+	. "github.com/onsi/gomega"
 )
 
 // pulled out of matchers code
@@ -18,6 +18,7 @@ func lengthOf(a interface{}) (int, bool) {
 		return 0, false
 	}
 }
+
 func formatMessage(actual interface{}, message string, expected ...interface{}) string {
 	if len(expected) == 0 {
 		return fmt.Sprintf("Expected%s\n%s", formatObject(actual), message)
