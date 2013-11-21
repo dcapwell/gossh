@@ -1,4 +1,4 @@
-all: clean build test
+all: clean build test install
 
 BASE = github.com/dcapwell/gossh
 #PROTO_PKG = $(BASE)/prototype $(BASE)/workpool $(BASE)
@@ -9,6 +9,9 @@ clean:
 
 build:
 	@go build $(PROTO_PKG)
+
+install:
+	@go install $(BASE)/gossh
 
 fmt:
 	@go fmt $(PROTO_PKG)

@@ -3,7 +3,6 @@ package gossh
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os/exec"
 	"syscall"
 )
@@ -47,7 +46,6 @@ func (s *sshProcessTask) Run() (interface{}, error) {
 	// must return of type (SshResponseContext, error)
 	//cmd := exec.Command("/usr/bin/ssh", s.Host, s.Cmd)
 	cmd := exec.Command("ssh", s.generateCmdArguments()...)
-	log.Printf("Cmd: %v\n", cmd)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, err
