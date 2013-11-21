@@ -53,11 +53,9 @@ func parseArgs() (Args, error) {
 	flags := flag.NewFlagSet("Gossh", flag.ContinueOnError)
 	flags.SetOutput(ioutil.Discard)
 
-  /*
   numConcurrent := flags.Int("n", DEFAULT_CONCURRENT, "defines how many concurrent resources to use")
   user := flags.String("l", "", "defines user to login as")
   identity := flags.String("i", "", "defines private key to use to login with")
-  */
 
   if err := flags.Parse(os.Args[2:]); err != nil {
     return Args{}, fmt.Errorf("%s\n", USEAGE)
@@ -67,6 +65,16 @@ func parseArgs() (Args, error) {
     Hosts: os.Args[1],
     Cmd: strings.Join(flags.Args(), " "),
     Opts: gossh.Options{},
+  }
+
+  if numConcurrent != nil {
+    args.Opts.Concurrent = *numConcurrent
+  }
+  if user != nil {
+    args.Opts.User = *user
+  }
+  if identity != nil {
+    args.Opts.Identity = *identity
   }
 
   return args, nil
