@@ -11,7 +11,8 @@ build:
 	@go build $(PROTO_PKG)
 
 install:
-	@go install $(BASE)/gossh
+	@go install $(BASE)/gossh $(BASE)/gossh_agent
+	@go install $(BASE)/gossh_agent
 
 fmt:
 	@go fmt $(PROTO_PKG)
