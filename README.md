@@ -14,8 +14,31 @@ gossh host-[1..100].example.com \
   -o ServerAliveInterval=10 \     # options to pass to ssh
   -o ConnectTimeout=2 \
   -o UserKnownHostsFile=/dev/null \
+  -o PreferredAuthentications=publickey \
   -o StrictHostKeyChecking=no \
   date                            # command to run on all hosts
+```
+
+Real example
+```
+$ gossh localhost,localhost -o PreferredAuthentications=publickey -l root date
+2013/11/21 09:33:00 Hostname: localhost
+Stdout: 
+Stderr: Permission denied (publickey,keyboard-interactive).
+
+2013/11/21 09:33:00 Hostname: localhost
+Stdout: 
+Stderr: Permission denied (publickey,keyboard-interactive).
+
+$ gossh localhost,localhost -o PreferredAuthentications=publickey  date
+2013/11/21 09:33:04 Hostname: localhost
+Stdout: Thu Nov 21 09:33:04 PST 2013
+
+Stderr: 
+2013/11/21 09:33:04 Hostname: localhost
+Stdout: Thu Nov 21 09:33:04 PST 2013
+
+Stderr: 
 ```
 
 ```
