@@ -32,7 +32,7 @@ type SshResponseContext struct {
 }
 
 type SshResponses struct {
-	Responses []SshResponseContext
+	Responses chan SshResponseContext
 }
 
 type Ssh interface {
@@ -74,18 +74,19 @@ func (s *sshProcessImpl) Run(hosts []string, cmd string, options Options) (SshRe
 }
 
 func waitForCompletion(results chan workpool.TaskResult, expectedResponses int) SshResponses {
-	responses := make([]SshResponseContext, expectedResponses)
-	idx := 0
-	for result := range results {
-		rsp, err := taskResultToContext(result)
-		if err != nil {
-			// should this be ignored?
-			log.Printf("[WARNING]\t%v", err)
-		} else {
-			responses[idx] = rsp
+	responses := make(chan SshResponseContext, expectedResponses)
+	go func() {
+		for result := range results {
+			rsp, err := taskResultToContext(result)
+			if err != nil {
+				// should this be ignored?
+				log.Printf("[WARNING]\t%v", err)
+			} else {
+				responses <- rsp
+			}
 		}
-		idx++
-	}
+		close(responses)
+	}()
 	return SshResponses{responses}
 }
 

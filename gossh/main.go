@@ -39,7 +39,7 @@ func main() {
   if err != nil {
     panic(err)
   }
-  for _, ctx := range rsp.Responses {
+  for ctx := range rsp.Responses {
     log.Printf("Hostname: %s\nStdout: %s\nStderr: %s\n", ctx.Hostname, ctx.Response.Stdout, ctx.Response.Stderr)
   }
 }
