@@ -14,14 +14,9 @@ const (
 )
 
 /*
-Expands the given string into 1 or more strings.  Expand has support for range, and list based expansions.  Range based expansions use the notation [start..end], where start is less than or equal to end.  List based expansions use a comma ',' to denote a new element.  Any number of range and list expansions are supported.
+Expands the given string into 1 or more strings.  Expand has support for range, and list based expansions.  Range based expansions use the notation [start..end].  List based expansions use a comma ',' to denote a new element.  Any number of range and list expansions are supported.
 */
 func Expand(input string) ([]string, error) {
-  /*
-  Algo:
-    split off COMM to get all list elements
-    for each element, recursively expand all ranges
-  */
   data := make([]string, 0)
   splits := expandSplit(input)
   for _, split := range splits {
@@ -85,14 +80,20 @@ func explodeRangeParam(input string) ([]int, error) {
   if err != nil {
     return nil, err
   }
-  //TODO support this.  Its valid to want range to go in reverse
-  if start > end {
-    return nil, fmt.Errorf("Unable to parse %s; start value in range is larger than end.\n", input)
-  }
-  size := end - start + 1
-  nums := make([]int, size)
-  for i := 0; i < size; i++ {
-    nums[i] = start + i
+
+  var nums []int
+  if end > start {
+    size := end - start + 1
+    nums = make([]int, size)
+    for i := 0; i < size; i++ {
+      nums[i] = start + i
+    }
+  } else {
+    size := start - end + 1
+    nums = make([]int, size)
+    for i := 0; i < size; i++ {
+      nums[i] = end + i
+    }
   }
   return nums, nil
 }

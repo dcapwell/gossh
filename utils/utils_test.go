@@ -29,6 +29,15 @@ var _ = Describe("Utils", func() {
           Expect(output[i]).To(Equal("example-" + strconv.Itoa(i + 1)))
         }
       })
+      It("should return multiple outputs in reverse", func() {
+        input := "example-[3..1]"
+        output, err := Expand(input)
+        Expect(err).To(BeNil())
+        Expect(output).To(HaveLen(3))
+        for i := 2; i >= 0; i-- {
+          Expect(output[i]).To(Equal("example-" + strconv.Itoa(i + 1)))
+        }
+      })
     })
     Context("with multiple range expand params", func() {
       It("should return multiple outputs", func() {
@@ -132,15 +141,20 @@ var _ = Describe("Utils", func() {
     })
   })
   Context("with invalid range", func() {
-    /*
-    It("should return error", func() {
-      //TODO this should be valid.  Its logical to want your range to go backwards.
-      _ := "invalid-[10..1]"
+    It("non int as start elipse should fail", func() {
+      input := "example-[a..2]"
+      _, err := Expand(input)
+      Expect(err).To(HaveOccured())
     })
-    */
-    It("non int be elipse should fail", func() {
+    It("non int as end elipse should fail", func() {
+      input := "example-[1..a]"
+      _, err := Expand(input)
+      Expect(err).To(HaveOccured())
     })
     It("multiple elipse should fail", func() {
+      input := "example-[1....2]"
+      _, err := Expand(input)
+      Expect(err).To(HaveOccured())
     })
   })
 })
