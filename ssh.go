@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/dcapwell/gossh/workpool"
 	"log"
-	"time"
 )
 
 const (
@@ -27,7 +26,7 @@ type SshResponse struct {
 
 type SshResponseContext struct {
 	Hostname string
-	Duration time.Duration
+	Duration string
 	Response SshResponse
 }
 
