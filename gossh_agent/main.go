@@ -5,6 +5,7 @@ import (
   "github.com/dcapwell/gossh"
   "github.com/dcapwell/gossh/utils"
   "log"
+  "net"
   "net/http"
   "fmt"
   "flag"
@@ -104,6 +105,7 @@ func main() {
   // flags.StringVar(&base, "base", "/", "base path for http requests; defaults to '/'")
   port := ":7654"
   flags.StringVar(&port, "port", ":7654", "port to listen on; defaults to ':7654'")
+  unix := flags.String("unix", "", "path to where unix socket should be open; example /tmp/http.sock")
   if err := flags.Parse(os.Args[1:]); err != nil {
     log.Fatal(err)
   }
@@ -112,5 +114,16 @@ func main() {
   gorest.RegisterService(new(SshService))
 
   http.Handle(base,gorest.Handle())
-  log.Fatal(http.ListenAndServe(port, nil))
+  var err error
+  if unix != nil && *unix != "" {
+    fd, err := net.Listen("unix", *unix)
+    defer fd.Close()
+    if err != nil {
+      log.Fatal(err)
+    }
+    err = http.Serve(fd, nil)
+  } else {
+    err = http.ListenAndServe(port, nil)
+  }
+  log.Fatal(err)
 }

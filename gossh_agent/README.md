@@ -51,3 +51,21 @@ $ curl -s 'http://localhost:7654/ssh/localhost?cmd=echo+Hello+World&user=root&op
 }
 
 ```
+
+Unix Socket
+```
+gossh_agent -unix /tmp/http.sock
+$ telnet /tmp/http.sock
+Trying /tmp/http.sock...
+Connected to (null).
+Escape character is '^]'.
+GET /ssh/localhost,localhost?cmd=echo+Hello+World HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 219
+Date: Mon, 25 Nov 2013 18:01:10 GMT
+
+{"Responses":[{"Hostname":"localhost","Duration":"83ms","Response":{"Code":0,"Stdout":"Hello World\n","Stderr":""}},{"Hostname":"localhost","Duration":"85ms","Response":{"Code":0,"Stdout":"Hello World\n","Stderr":""}}]}
+
+```
