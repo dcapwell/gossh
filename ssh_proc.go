@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"syscall"
-  "time"
+	"time"
 )
 
 // this file is for SshTask that calls the local ssh shell command.
@@ -44,7 +44,7 @@ func (s *sshProcessTask) generateCmdArguments() []string {
 }
 
 func (s *sshProcessTask) Run() (interface{}, error) {
-  start := time.Now()
+	start := time.Now()
 	// must return of type (SshResponseContext, error)
 	//cmd := exec.Command("/usr/bin/ssh", s.Host, s.Cmd)
 	cmd := exec.Command("ssh", s.generateCmdArguments()...)
@@ -73,8 +73,8 @@ func (s *sshProcessTask) Run() (interface{}, error) {
 	err = cmd.Wait()
 
 	exitCode, err := exitCode(err)
-  total := time.Now().Sub(start)
-  ctx.Duration = fmt.Sprintf("%dms", total / time.Millisecond)
+	total := time.Now().Sub(start)
+	ctx.Duration = fmt.Sprintf("%dms", total/time.Millisecond)
 	if err != nil {
 		// run on non supported OS
 		return ctx, err
