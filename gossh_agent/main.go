@@ -63,6 +63,7 @@ func (serv SshService) parseQuery() (cmd string, opts gossh.Options, err error) 
   }
   opts.User = val.Get("user")
   opts.Identity = val.Get("identity")
+  // get concurrency
   concStr := val.Get("concurrent")
   if concStr != "" {
     conc, err := strconv.Atoi(concStr)
@@ -72,6 +73,7 @@ func (serv SshService) parseQuery() (cmd string, opts gossh.Options, err error) 
     }
     opts.Concurrent = conc
   }
+  // parse options
   o := val["option"]
   opts.Options = make(map[string]string)
   if o != nil {
