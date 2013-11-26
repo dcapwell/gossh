@@ -20,5 +20,9 @@ fmt:
 test:
 	@go test -v $(PROTO_PKG)
 
+## why does this always say "prototype is up to date"?
+prototype:
+	@go test -v github.com/dcapwell/gossh/prototype
+
 doc:
 	@godoc -http=":6060" -index=true -play=true

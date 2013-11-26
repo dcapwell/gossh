@@ -8,39 +8,20 @@ import (
 	"time"
 )
 
+func newSshProcessTask(host string, cmd string, opt Options) func()(interface{}, error) {
+  state := &sshProcessTask{
+		Host:    host,
+		Cmd:     cmd,
+		Options: opt,
+	}
+  return state.Run
+}
+
 // this file is for SshTask that calls the local ssh shell command.
 type sshProcessTask struct {
 	Host    string
 	Cmd     string
 	Options Options
-}
-
-func (s *sshProcessTask) generateCmdArguments() []string {
-	// make a slice of init size 4, but can expand to 100
-	cmd := make([]string, 0)
-
-	cmd = append(cmd, "-n")
-
-	// add user/identity
-	if s.Options.User != "" {
-		cmd = append(cmd, "-l", s.Options.User)
-	}
-	if s.Options.Identity != "" {
-		cmd = append(cmd, "-i", s.Options.Identity)
-	}
-
-	// add options
-	for key, value := range s.Options.Options {
-		cmd = append(cmd, "-o", key+"="+value)
-	}
-
-	// add host
-	cmd = append(cmd, s.Host)
-
-	// last action, add cmd
-	cmd = append(cmd, s.Cmd)
-
-	return cmd
 }
 
 func (s *sshProcessTask) Run() (interface{}, error) {
@@ -84,6 +65,35 @@ func (s *sshProcessTask) Run() (interface{}, error) {
 	return ctx, nil
 }
 
+func (s *sshProcessTask) generateCmdArguments() []string {
+	// make a slice of init size 4, but can expand to 100
+	cmd := make([]string, 0)
+
+	cmd = append(cmd, "-n")
+
+	// add user/identity
+	if s.Options.User != "" {
+		cmd = append(cmd, "-l", s.Options.User)
+	}
+	if s.Options.Identity != "" {
+		cmd = append(cmd, "-i", s.Options.Identity)
+	}
+
+	// add options
+	for key, value := range s.Options.Options {
+		cmd = append(cmd, "-o", key+"="+value)
+	}
+
+	// add host
+	cmd = append(cmd, s.Host)
+
+	// last action, add cmd
+	cmd = append(cmd, s.Cmd)
+
+	return cmd
+}
+
+
 func createContext(host string) SshResponseContext {
 	rsp := SshResponse{}
 	ctx := SshResponseContext{
@@ -111,10 +121,3 @@ func exitCode(err error) (int, error) {
 	return 0, nil
 }
 
-func newSshProcessTask(host string, cmd string, opt Options) *sshProcessTask {
-	return &sshProcessTask{
-		Host:    host,
-		Cmd:     cmd,
-		Options: opt,
-	}
-}

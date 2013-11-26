@@ -1,4 +1,4 @@
-package main
+package prototype
 
 import (
   "code.google.com/p/gorest"

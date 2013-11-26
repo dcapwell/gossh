@@ -115,7 +115,7 @@ func createTasks(hosts []string, cmd string, options Options) chan workpool.Task
 
 func newSshTask(host string, cmd string, opt Options) workpool.Task {
 	// use this method to switch impls
-	return newSshProcessTask(host, cmd, opt).Run
+	return newSshProcessTask(host, cmd, opt)
 }
 
 func runConcurrency(options Options, numHosts int) int {
