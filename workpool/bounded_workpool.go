@@ -12,7 +12,8 @@ const (
 	FAILURE
 )
 
-const DEFAULT_MAX_WORKERS = 1000
+// default number of workers to run concurrently.  This value can change between versions
+const default_max_workers = 1000
 
 // Function to run within the work pool
 type Task func() (interface{}, error)
@@ -35,7 +36,7 @@ type ErrorResult struct {
 
 // Create a new WorkPool with 1,000 max resources
 func NewWorkPool() WorkPool {
-	return &workPoolImpl{maxWorkers: DEFAULT_MAX_WORKERS, currentWorkers: 0}
+	return &workPoolImpl{maxWorkers: default_max_workers}
 }
 
 // Create a new WorkPool with max as the number of resources.  If max is not a positive value, then an error is returned
@@ -43,7 +44,7 @@ func NewWorkPoolWithMax(max int) (WorkPool, error) {
 	if max <= 0 {
 		return nil, fmt.Errorf("Unable to make new work pool with max value %d; max must be a positive value.\n", max)
 	}
-	return &workPoolImpl{maxWorkers: max, currentWorkers: 0}, nil
+	return &workPoolImpl{maxWorkers: max}, nil
 }
 
 // A bounded pool of workers to run given tasks.  Currently the bounded max size is
