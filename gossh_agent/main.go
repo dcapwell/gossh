@@ -117,10 +117,19 @@ func main() {
   var err error
   if unix != nil && *unix != "" {
     fd, err := net.Listen("unix", *unix)
-    defer fd.Close()
     if err != nil {
       log.Fatal(err)
     }
+    http.HandleFunc("/admin/shutdown", func(w http.ResponseWriter, r *http.Request) {
+      w.Header().Set("Content-Type", "text/plain")
+      fmt.Fprint(w, "Shutting down...\n")
+      err := fd.Close()
+      if err != nil {
+        fmt.Fprintf(w, "Truble shutting down... %v\n", err)
+      }
+    })
+    // This wont run if user hit ctrl + c.  Need new way to clean up
+    // defer fd.Close()
     err = http.Serve(fd, nil)
   } else {
     err = http.ListenAndServe(port, nil)
