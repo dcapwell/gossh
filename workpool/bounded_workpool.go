@@ -12,14 +12,10 @@ const (
 	FAILURE
 )
 
+const DEFAULT_MAX_WORKERS = 1000
+
 // Function to run within the work pool
 type Task func() (interface{}, error)
-
-/*
-type Task interface {
-  Run() (interface{}, error)
-}
-*/
 
 // Result of the task run
 type TaskResult struct {
@@ -39,7 +35,7 @@ type ErrorResult struct {
 
 // Create a new WorkPool with 1,000 max resources
 func NewWorkPool() WorkPool {
-	return &workPoolImpl{maxWorkers: 1000, currentWorkers: 0}
+	return &workPoolImpl{maxWorkers: DEFAULT_MAX_WORKERS, currentWorkers: 0}
 }
 
 // Create a new WorkPool with max as the number of resources.  If max is not a positive value, then an error is returned
