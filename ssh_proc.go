@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-func newSshProcessTask(host string, cmd string, opt Options) func()(interface{}, error) {
-  state := &sshProcessTask{
+func newSshProcessTask(host string, cmd string, opt Options) func() (interface{}, error) {
+	state := &sshProcessTask{
 		Host:    host,
 		Cmd:     cmd,
 		Options: opt,
 	}
-  return state.Run
+	return state.run
 }
 
 // this file is for SshTask that calls the local ssh shell command.
@@ -24,7 +24,7 @@ type sshProcessTask struct {
 	Options Options
 }
 
-func (s *sshProcessTask) Run() (interface{}, error) {
+func (s *sshProcessTask) run() (interface{}, error) {
 	start := time.Now()
 	// must return of type (SshResponseContext, error)
 	//cmd := exec.Command("/usr/bin/ssh", s.Host, s.Cmd)
@@ -93,16 +93,6 @@ func (s *sshProcessTask) generateCmdArguments() []string {
 	return cmd
 }
 
-
-func createContext(host string) SshResponseContext {
-	rsp := SshResponse{}
-	ctx := SshResponseContext{
-		Hostname: host,
-		Response: rsp,
-	}
-	return ctx
-}
-
 func exitCode(err error) (int, error) {
 	if err != nil {
 		// it puts exit code in err... grrr
@@ -120,4 +110,3 @@ func exitCode(err error) (int, error) {
 	// was successful, so exit code is 0
 	return 0, nil
 }
-
