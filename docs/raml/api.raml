@@ -11,6 +11,10 @@ documentation:
 /ssh:
   # how do I doc this param?
   /{hosts}:
+    uriParameters:
+      hosts:
+        description: |
+          A host range to run requests against.  Example: host[1..10] (runs on host1, host2, host3... host10)
     get:
       description: Run the given command on all the hosts and return response
       queryParameters:
