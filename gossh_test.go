@@ -15,7 +15,7 @@ var _ = Describe("Gossh", func() {
     Describe("run multiple ssh commands concurrently", func() {
       Context("with one host", func() {
         Context("and valid command", func() {
-          rsp, err := ssh.Run([]string{"localhost"}, "date", Options{})
+          rsp, err := ssh.Run([]string{"localhost"}, "date -u", Options{})
           data := chanToSlize(rsp.Responses)
 
           It("should succeed", func() {
@@ -26,7 +26,7 @@ var _ = Describe("Gossh", func() {
             Expect(data).To(HaveLen(1))
             Expect(data[0].Hostname).To(Equal("localhost"))
             Expect(data[0].Response.Code).To(Equal(workpool.SUCCESS))
-            Expect(data[0].Response.Stdout).To(ContainSubstring("PST"))
+            Expect(data[0].Response.Stdout).To(ContainSubstring("UTC"))
           })
         })
         Context("with invalid command", func() {
@@ -52,7 +52,7 @@ var _ = Describe("Gossh", func() {
       })
       Context("with mulitple hosts", func() {
         Context("with valid command", func() {
-          rsp, err := ssh.Run([]string{"localhost", "localhost"}, "date", Options{})
+          rsp, err := ssh.Run([]string{"localhost", "localhost"}, "date -u", Options{})
           data := chanToSlize(rsp.Responses)
 
           It("should not return error", func() {
@@ -69,10 +69,10 @@ var _ = Describe("Gossh", func() {
           })
           It("should have successed", func() {
             Expect(data[0].Response.Code).To(Equal(workpool.SUCCESS))
-            Expect(data[0].Response.Stdout).To(ContainSubstring("PST"))
+            Expect(data[0].Response.Stdout).To(ContainSubstring("UTC"))
 
             Expect(data[1].Response.Code).To(Equal(workpool.SUCCESS))
-            Expect(data[1].Response.Stdout).To(ContainSubstring("PST"))
+            Expect(data[1].Response.Stdout).To(ContainSubstring("UTC"))
           })
         })
         Context("with invalid command", func() {
