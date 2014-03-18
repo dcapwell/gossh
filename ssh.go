@@ -117,9 +117,9 @@ func newSshTask(host string, cmd string, opt Options) workpool.Task {
   //TODO find better way to do this.  Switching should be a user option, and default based off num hosts
 
 	// use this method to switch impls
-	// return newSshProcessTask(host, cmd, opt)
+	return newSshProcessTask(host, cmd, opt)
   // when num hosts is < 8~, proc seems faster, else native seems faster
-	return newSshNativeTask(host, cmd, opt)
+	// return newSshNativeTask(host, cmd, opt)
 }
 
 func runConcurrency(options Options, numHosts int) int {
