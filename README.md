@@ -10,7 +10,6 @@ gossh host-[1..100].example.com \
   -n 40 \                         # 40 concurrent ssh sessions at a time
   -l techops \                    # ssh as user techops
   -i /home/techops/.ssh/id_dsa \  # with identity from path
-  -t \                            # add a tty session
   -o ServerAliveInterval=10 \     # options to pass to ssh
   -o ConnectTimeout=2 \
   -o UserKnownHostsFile=/dev/null \

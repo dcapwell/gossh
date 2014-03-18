@@ -15,9 +15,7 @@ const (
   DEFAULT_CONCURRENT = 40
 )
 
-const USEAGE = `
-gossh <hosts> [-n <num>] [-l <user>] [-i <path>] [-o Option=val] cmd
-`
+const USEAGE = `gossh <hosts> [-n <num>] [-l <user>] [-i <path>] [-o Option=val] cmd`
 
 type Args struct {
   Hosts   string
@@ -28,7 +26,8 @@ type Args struct {
 func main() {
   args, err := parseArgs()
   if err != nil {
-    panic(err)
+    fmt.Printf("%s", err.Error())
+    os.Exit(1)
   }
   ssh := gossh.NewSsh()
   hosts, err := utils.Expand(args.Hosts)
